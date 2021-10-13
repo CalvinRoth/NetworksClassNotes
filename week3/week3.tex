@@ -1,0 +1,142 @@
+% Created 2021-10-12 Tue 21:02
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usepackage{amssymb}
+\newcommand\ssum[1]{\sum_{\substack{#1}}}
+\newcommand\E{\mathbb{E}}
+\author{Calvin Roth}
+\date{\today}
+\title{}
+\hypersetup{
+ pdfauthor={Calvin Roth},
+ pdftitle={},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 27.2 (Org mode 9.5)}, 
+ pdflang={English}}
+\begin{document}
+
+\section{Intro}
+\label{sec:org601d5dd}
+Today in class we will dicuss random graph models and doing statisitics on such graphs.
+
+\section{Statistics Review}
+\label{sec:org20cecfd}
+\textbf{Weak Law of Large Number} Consider x\textsubscript{i}|\textsubscript{1}\textsuperscript{n} i.i.d. random variables with E[x\textsubscript{i}]= \(\mu\) then for all \(\epsilon\) > 0
+P( |\(\sum\) x\textsubscript{i} - n \(\mu\) | > \(\epsilon\) \(\mu\) ) \(\to\) 0  as n \(\to\) \(\infty\)
+Also known as asymptotically almost surely or a.a.s.
+
+\textbf{Strong Law} P(lim | mean(x) - \(\mu\)| > 0 )
+
+\textbf{Sterling Approximation} For any natural number n,
+  $\sqrt{2\pi n} (n/e)^{n} \leq  n! \leq  e\sqrt{n} (n/e)^{n}$
+  Therefore $\dbinom{n}{k} \leq (en/k)^{k}$
+
+Exponential: lim\textsubscript{n\(\to\) \(\infty\)} (1 - x/n)\textsuperscript{n} = x\textsuperscript{n}
+
+\subsection{Linearity of Expectation}
+\label{sec:org560b2d0}
+A important useful fact to know is that if we have a set of n random variables, \(X_{i}\) then if we define a new variabe \(Y = \sum_{i=1}^{n} X_{i}\) then linearity of expectation says that \(E[Y] = E[\sum X_{i}] = \sum E[X_{i}]\). In practice, we will often have the \(E[X_{1}] = E[X_{2}] = \cdots = E[X_{n}]\) in which case \(E[Y] = n E[X_{1}]\). Also note this is still true even if the random variables \(X_{i}\) are not independent of each other.
+
+A common pattern applied often is to find the expectation of a random variable Y, let \(X_{i}\) be the indicator of some event i.e. \(X_{i} = \begin{cases} 1 & \text{ If event i happens} \\ 0 & \text{ else} \end{cases}\). In such a case where \(Y = \sum X_{i}\) we would have \(E[Y] = \sum E[X_{i}] = \sum 1*Pr[X_{i}]\).
+
+
+\subsection{Common Distributions}
+\label{sec:org6b3cacb}
+
+This is just a table of some common distributions and the basic facts about them. This is hopefully mostly reference.
+\begin{center}
+\begin{tabular}{llll}
+Distribution & definition & E[X] ] & Var[X]\\
+Bernoulli & Pr[X = 1] = p, Pr[X=0]=1-p & p & p(1-p)\\
+Binomial & Pr[X=k]  = $\binom{n}{k} p^{k} (1-p)^{n-k}$ & np & np(1-p)\\
+Poisson & $ Pr[X=x] \frac\{e^{- \lambda } \lambda^{x}\}\{x!\}$ &  $ \lambda $ & \(\lambda\)\\
+Normal & hi &  $\mu$  & $\sigma^{2}$ \\
+\end{tabular}
+\end{center}
+$Pr[X=x] =  \frac{1}{ (2 \pi)^{\frac{1}{2}} \sigma } \left[ \frac{-1}{2} \frac{x -\mu}{\sigma}^{2} \right]$
+This is the simplest model where we have a random variable \(X_{i}\) and \(Pr[X_{i} = 1] = p\) and \(Pr[X_{i} = 0] = 1-p\).
+
+\section{Erdos-Renyi Random Graphs}
+\label{sec:org41189dd}
+The first graph model we introduce is also the most intuitive for producing a random undirected graph.  The Erdos-Renyi random graph model takes two parameters, the number of nodes and probability that there is an edge between two vertices This probablity is uniform across every pair of nodes. In the following we will let G(n,p) denote an Erdos-Renyi(ER for the rest of these notes) graph with n nodes and link probablity p.
+
+
+To begin saying interesting things about these graphs we will define the Bernoulli random variables \(\ell_{ij} = \begin{cases} 1 & \text{i is connected to j} \\ 0 & \text{Otherwise} \end{cases}\) for all \$i\(\neq\) j, i,j \(\in\) [n]. Notice that because the link probability is uniform the set of all \(\ell_{ij}\) variables are independent and specifically \(Pr[\ell_{ij} = 1] = p\).
+
+\subsection{Number of Edges in ER graphs}
+\label{sec:org20d0931}
+This leads to the following expression the expected number of edges.
+\begin{align}
+    \E[\# Edges] &= \E[\sum_{\substack{i,j \in [n] \\ i\neq j}} l_{ij}  ] \\
+                 &= \ssum{ i,j \in [n] \\ i\neq j } \E [l_{ij}] \\
+    &= \binom{n}{2} p \\
+    &= \frac{n(n-1)}{2} p
+\end{align}
+
+
+Using the weak law of large numbers, we have that for any \(\alpha > 0\) we have
+$$Pr[\left| \ssum{i \neq j} l_{ij} - p \frac{n(n-1)}{2} \right|  > \alpha p \frac{n(n-1)}{2} ] \to 0$$
+as \(n \to \infty\).
+
+The implication of this is that for large n the odds we have a random graph that doesn't have close to \(\binom{n}{2}p\) goes to 0.
+
+\subsection{Degrees of ER Graphs}
+\label{sec:orgbbc69c2}
+Now we will figure out what the expected degree of any node v in an ER graph is. Let D be a random variable representing the degree of v.
+\begin{align}
+\E[D] &= \E[\ssum{j\neq v} l_{{vj} }] \\
+&= \ssum{j\neq v} \E [ l_{vj} ] \\
+&= (n-1)*p
+\end{align}
+
+And the probablity D=d is the well known probablity distrubtion of a binomial random variable. That is \(Pr[D=d] = \binom{n-1}{d} p^{d} (1-p)^{n-1-p}\) where we use n-1 instead of n because there are n-1 nodes that could match with our target node since self loops aren't permitted.
+
+If we fixed the expected degree with \(\lambda = (n-1)p\) then we can approximate this has \(Pr[D=d] = \frac{e^\lambda \lambda^{d}}{d!}\)
+
+
+
+\subsection{Individual clustering coefficient}
+\label{sec:orga5bfc09}
+Clustering coefficient of an ER graph is Cl\textsubscript{i}(p) = p
+\textbf{I don't know how get this with what was in class}
+
+\section{Transistion functions}
+\label{sec:org1afbe23}
+A thing we will commonly look at in this class is how a property of choosen graph family changes as the graph becomes bigger and the link probablity changes with it. Usually the probablity will of links decreases with n as we are frequently interested in properties of sparse graphs.
+
+Instead of doing the challenging working of fully analzying the probablity of a given property for a fixed n, it will typically be easier to asymptomatic analysis on what happens as \(n\to \infty\). We will often see that the probablity of an event goes to 0 if the link probablity p(n) shrinks strictly faster than some specicial threshold function and to 1 if p(n) shrinks slower. We call such behavior a phase transistion.
+
+\subsection{Example}
+\label{sec:orgfb7a5c2}
+The function \(f(n) = \frac{log(n)}{n}\) clearly goes to zero as \(n \to \infty\). It can be shown that if \(p(n) / f(n) \to 0\) with n then odds the graph is connected goes to zero but if \(p(n)/f(n) \to \infty\) then the graph will be connected with incredibly high probablity.
+
+\begin{enumerate}
+\item Define A = number of edges > 0
+Threshold of emergence of the first edge E[\#Edges] = C(n,2) * p \(\approx\) n\textsuperscript{2}/2 p(n)
+ So is p*n\textsuperscript{2}/2 \(\to\) 0 then E[number of edges] \(\to\) 0 so P(number of edges) \(\to\) 0
+
+If instead p(n)n\textsuperscript{2}/2 then E[number of edge] \(\to\) \(\infty\)
+\textbf{Remark} Does not imply that P(number of edges > 0 ) \(\to\) 1
+
+\item 1/n\textsuperscript{2} is the threshold function for the emergence of the first link.
+
+\item E[number of triples] = n\textsuperscript{3} p\textsuperscript{2} using a similar analysis we can show that t(n) = n\textsuperscript{-3/2} is a threshold function
+\item Threshold for observing a cycle with k nodes is t(n) = 1/n
+\item Also at 1/n the largest component has O(log(n)) nodes
+\item At p(n)= log(n)/n threshold the network becomes connected
+\end{enumerate}
+\end{document}
